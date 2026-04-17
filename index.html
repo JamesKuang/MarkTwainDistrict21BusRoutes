@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brooklyn Bus Routes Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <style>
+    :root {
+      --bg:#f4f7fb; --panel:#ffffffee; --card:#ffffff; --text:#162033; --muted:#5f6b7a; --line:#dbe2ea;
+      --pill-bg:#eaf2ff; --pill-text:#2563eb; --hover:#f4f8ff; --shadow:0 18px 40px rgba(15,23,42,.12);
+      --toolbar:#ffffffd9;
+    }
+    body.dark {
+      --bg:#0b1220; --panel:#0f172ae8; --card:#111827; --text:#e5eefb; --muted:#9fb0c7; --line:#243247;
+      --pill-bg:#172554; --pill-text:#bfdbfe; --hover:#172033; --shadow:0 22px 50px rgba(0,0,0,.38);
+      --toolbar:#0f172ae8;
+    }
+    * { box-sizing:border-box; }
+    html, body { margin:0; height:100%; overflow:hidden; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--text); background:var(--bg); }
+    .globalToolbar { position:sticky; top:0; z-index:1200; padding:14px 18px; border-bottom:1px solid var(--line); background:var(--toolbar); backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .globalToolbarLeft { display:flex; align-items:center; gap:10px; min-width:0; }
+    .app { display:grid; grid-template-columns:400px 1fr; height:calc(100vh - 73px); }
+    .side { padding:20px; border-right:1px solid var(--line); background:var(--panel); backdrop-filter:blur(10px); overflow:hidden; display:flex; flex-direction:column; min-height:0; }
+    .main { display:grid; grid-template-rows:1fr; min-height:0; overflow:hidden; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:20px; padding:18px; margin-bottom:14px; box-shadow:var(--shadow); }
+    .legendCard { flex:1; min-height:0; display:flex; flex-direction:column; margin-bottom:0; }
+    .eyebrow { display:inline-block; padding:6px 10px; border-radius:999px; background:var(--pill-bg); color:var(--pill-text); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+    h1 { margin:12px 0 6px; font-size:28px; line-height:1.1; }
+    h2 { margin:0 0 12px; font-size:18px; }
+    p { margin:8px 0 0; color:var(--muted); line-height:1.5; }
+    .meta { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+    .stat { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px; }
+    .stat small { display:block; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; font-size:11px; margin-bottom:6px; }
+    .stat strong { font-size:24px; }
+    .toolbarTitle { font-size:15px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .pill { display:inline-flex; align-items:center; padding:9px 13px; border-radius:999px; background:var(--pill-bg); color:var(--pill-text); font-size:13px; font-weight:700; white-space:nowrap; }
+    .themeBtn { width:44px; height:44px; border-radius:999px; border:1px solid var(--line); background:var(--card); color:var(--text); display:inline-flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:var(--shadow); flex:none; }
+    .themeBtn:hover { background:var(--hover); }
+    .themeBtn svg { width:18px; height:18px; }
+    .mapWrap { padding:16px; height:100%; overflow:hidden; }
+    .mapFrame { height:100%; min-height:0; border:1px solid var(--line); border-radius:24px; overflow:hidden; box-shadow:var(--shadow); background:var(--card); }
+    #map { width:100%; height:100%; }
+    .routeList { display:grid; gap:10px; overflow:auto; min-height:0; padding-right:4px; }
+    .routeItem { width:100%; text-align:left; border:1px solid var(--line); border-radius:16px; background:var(--card); padding:14px; color:var(--text); cursor:pointer; }
+    .routeItem:hover { background:var(--hover); }
+    .routeItemHeader { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .routeLeft { display:flex; align-items:center; gap:10px; }
+    .swatch { width:12px; height:12px; border-radius:999px; flex:none; }
+    .routeName { font-weight:800; font-size:14px; }
+    .routeCount { font-size:12px; color:var(--muted); }
+    .stopList { margin-top:10px; display:grid; gap:6px; }
+    .stopChip { font-size:12px; color:var(--muted); padding:8px 10px; border:1px solid var(--line); border-radius:12px; background:var(--card); }
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip, .leaflet-control-layers, .leaflet-bar a { background:var(--card); color:var(--text); border-color:var(--line); }
+    @media (max-width: 980px) {
+      .app { grid-template-columns:1fr; height:calc(100vh - 69px); }
+      .side { border-right:0; border-bottom:1px solid var(--line); min-height:0; max-height:45vh; }
+      .main { min-height:0; }
+      .mapWrap { min-height:0; }
+      .mapFrame { min-height:0; }
+      .toolbarTitle { font-size:14px; }
+      .globalToolbar { padding:12px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="globalToolbar">
+    <div class="globalToolbarLeft">
+      <div class="toolbarTitle">Mark Twain District 21 — Bus Routes</div>
+      <span class="pill" id="matchCount">53 stops</span>
+    </div>
+    <button id="themeToggle" class="themeBtn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+    </button>
+  </div>
+  <div class="app">
+    <aside class="side">
+      <div class="card">
+        <span class="eyebrow">Brooklyn</span>
+        <h1>Bus Routes Map</h1>
+        <p>Tap a route in the legend to zoom to its full set of stops, or use the map layer control to show and hide individual runs.</p>
+        <div class="meta">
+          <div class="stat"><small>Routes</small><strong>12</strong></div>
+          <div class="stat"><small>Unique stops</small><strong>53</strong></div>
+        </div>
+      </div>
+      <div class="card legendCard">
+        <h2>Route legend</h2>
+        <div class="routeList" id="routeList"></div>
+      </div>
+    </aside>
+    <main class="main">
+      <div class="mapWrap"><div class="mapFrame"><div id="map"></div></div></div>
+    </main>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    var ROUTE_STOPS = {"9020": [{"route": "9020", "name": "Emmons Avenue-East 16 Street", "code": "0217", "lat": 40.583396, "lng": -73.952349}, {"route": "9020", "name": "Emmons Avenue-East 15 Street", "code": "0218", "lat": 40.583558, "lng": -73.953695}, {"route": "9020", "name": "Emmons Avenue-East 14 Street", "code": "0220", "lat": 40.583877, "lng": -73.955337}, {"route": "9020", "name": "Emmons Avenue-East 13 Street", "code": "0221", "lat": 40.58386, "lng": -73.956682}, {"route": "9020", "name": "Emmons Avenue-Voorhies Avenue", "code": "0222", "lat": 40.584162, "lng": -73.957985}, {"route": "9020", "name": "Emmons Avenue-East 12 Street", "code": "0216", "lat": 40.582816, "lng": -73.960504}, {"route": "9020", "name": "Emmons Avenue-East 9 Street", "code": "0215", "lat": 40.582499, "lng": -73.963832}, {"route": "9020", "name": "Emmons Avenue-East 7 Street", "code": "0214", "lat": 40.582265, "lng": -73.966451}, {"route": "9020", "name": "Emmons Avenue-Ocean Avenue", "code": "0213", "lat": 40.582316, "lng": -73.967775}, {"route": "9020", "name": "Emmons Avenue-Coney Island Avenue", "code": "0211", "lat": 40.582626, "lng": -73.971925}, {"route": "9020", "name": "Emmons Avenue-West 2 Street", "code": "0210", "lat": 40.582724, "lng": -73.97371}, {"route": "9020", "name": "Emmons Avenue-West 5 Street", "code": "0209", "lat": 40.583035, "lng": -73.976826}, {"route": "9020", "name": "Emmons Avenue-West 6 Street", "code": "0208", "lat": 40.583298, "lng": -73.977921}], "9021": [{"route": "9021", "name": "Oriental Blvd-McKenzie Street", "code": "", "lat": 40.576253, "lng": -73.948627}, {"route": "9021", "name": "Oriental Boulevard-Falmouth Street", "code": "0205", "lat": 40.576488, "lng": -73.950459}, {"route": "9021", "name": "Oriental Boulevard-Dover Street", "code": "0206", "lat": 40.576723, "lng": -73.953165}, {"route": "9021", "name": "Oriental Boulevard-Hastings Street", "code": "0207", "lat": 40.57743, "lng": -73.955764}, {"route": "9021", "name": "Emmons Avenue-West 6 Street", "code": "0208", "lat": 40.583298, "lng": -73.977921}, {"route": "9021", "name": "Emmons Avenue-West 5 Street", "code": "0209", "lat": 40.583035, "lng": -73.976826}, {"route": "9021", "name": "Emmons Avenue-West 2 Street", "code": "0210", "lat": 40.582724, "lng": -73.97371}, {"route": "9021", "name": "Emmons Avenue-Coney Island Avenue", "code": "0211", "lat": 40.582626, "lng": -73.971925}, {"route": "9021", "name": "Emmons Avenue-East 7 Street", "code": "0214", "lat": 40.582265, "lng": -73.966451}, {"route": "9021", "name": "Emmons Avenue-East 9 Street", "code": "0215", "lat": 40.582499, "lng": -73.963832}, {"route": "9021", "name": "Emmons Avenue-East 12 Street", "code": "0216", "lat": 40.582816, "lng": -73.960504}, {"route": "9021", "name": "Emmons Avenue-East 13 Street", "code": "0221", "lat": 40.58386, "lng": -73.956682}, {"route": "9021", "name": "Emmons Avenue-Voorhies Avenue", "code": "0222", "lat": 40.584162, "lng": -73.957985}, {"route": "9021", "name": "Emmons Avenue-East 14 Street", "code": "0220", "lat": 40.583877, "lng": -73.955337}, {"route": "9021", "name": "Emmons Avenue-East 15 Street", "code": "0218", "lat": 40.583558, "lng": -73.953695}, {"route": "9021", "name": "Emmons Avenue-East 16 Street", "code": "0217", "lat": 40.583396, "lng": -73.952349}], "9022": [{"route": "9022", "name": "Bayview Avenue-West 33 Street", "code": "", "lat": 40.588895, "lng": -74.000868}, {"route": "9022", "name": "Surf Avenue-West 33 Street", "code": "", "lat": 40.574567, "lng": -74.000164}, {"route": "9022", "name": "Mermaid Avenue-West 33 Street", "code": "0101", "lat": 40.577034, "lng": -73.999404}, {"route": "9022", "name": "Mermaid Avenue-West 29 Street", "code": "0102", "lat": 40.577259, "lng": -73.993938}, {"route": "9022", "name": "Mermaid Avenue-West 25 Street", "code": "0103", "lat": 40.577493, "lng": -73.988861}, {"route": "9022", "name": "Mermaid Avenue-West 20 Street", "code": "0104", "lat": 40.577666, "lng": -73.982801}, {"route": "9022", "name": "Mermaid Avenue-West 17 Street", "code": "0105", "lat": 40.577817, "lng": -73.979399}, {"route": "9022", "name": "Mermaid Avenue-West 15 Street", "code": "0106", "lat": 40.578044, "lng": -73.977123}, {"route": "9022", "name": "Mermaid Avenue-West 12 Street", "code": "0107", "lat": 40.578264, "lng": -73.974}, {"route": "9022", "name": "Mermaid Avenue-West 10 Street", "code": "0108", "lat": 40.578357, "lng": -73.972299}, {"route": "9022", "name": "Mermaid Avenue-West 8 Street", "code": "0109", "lat": 40.578522, "lng": -73.970616}, {"route": "9022", "name": "Mermaid Avenue-West 6 Street", "code": "0110", "lat": 40.578595, "lng": -73.968945}, {"route": "9022", "name": "Mermaid Avenue-West 5 Street", "code": "0111", "lat": 40.578702, "lng": -73.968057}], "9023": [{"route": "9023", "name": "Mermaid Avenue-West 5 Street", "code": "0111", "lat": 40.578702, "lng": -73.968057}, {"route": "9023", "name": "Mermaid Avenue-West 6 Street", "code": "0110", "lat": 40.578595, "lng": -73.968945}, {"route": "9023", "name": "Mermaid Avenue-West 8 Street", "code": "0109", "lat": 40.578522, "lng": -73.970616}, {"route": "9023", "name": "Mermaid Avenue-West 10 Street", "code": "0108", "lat": 40.578357, "lng": -73.972299}, {"route": "9023", "name": "Mermaid Avenue-West 12 Street", "code": "0107", "lat": 40.578264, "lng": -73.974}, {"route": "9023", "name": "Mermaid Avenue-West 15 Street", "code": "0106", "lat": 40.578044, "lng": -73.977123}, {"route": "9023", "name": "Mermaid Avenue-West 17 Street", "code": "0105", "lat": 40.577817, "lng": -73.979399}, {"route": "9023", "name": "Mermaid Avenue-West 20 Street", "code": "0104", "lat": 40.577666, "lng": -73.982801}, {"route": "9023", "name": "Mermaid Avenue-West 25 Street", "code": "0103", "lat": 40.577493, "lng": -73.988861}, {"route": "9023", "name": "Mermaid Avenue-West 29 Street", "code": "0102", "lat": 40.577259, "lng": -73.993938}, {"route": "9023", "name": "Mermaid Avenue-West 33 Street", "code": "0101", "lat": 40.577034, "lng": -73.999404}, {"route": "9023", "name": "Surf Avenue-West 33 Street", "code": "", "lat": 40.574567, "lng": -74.000164}, {"route": "9023", "name": "Bayview Avenue-West 33 Street", "code": "", "lat": 40.588895, "lng": -74.000868}], "9024": [{"route": "9024", "name": "Mermaid Avenue-West 33 Street", "code": "0101", "lat": 40.577034, "lng": -73.999404}, {"route": "9024", "name": "Mermaid Avenue-West 29 Street", "code": "0102", "lat": 40.577259, "lng": -73.993938}, {"route": "9024", "name": "Mermaid Avenue-West 25 Street", "code": "0103", "lat": 40.577493, "lng": -73.988861}, {"route": "9024", "name": "Mermaid Avenue-West 20 Street", "code": "0104", "lat": 40.577666, "lng": -73.982801}, {"route": "9024", "name": "Mermaid Avenue-West 17 Street", "code": "0105", "lat": 40.577817, "lng": -73.979399}, {"route": "9024", "name": "Mermaid Avenue-West 15 Street", "code": "0106", "lat": 40.578044, "lng": -73.977123}, {"route": "9024", "name": "Mermaid Avenue-West 12 Street", "code": "0107", "lat": 40.578264, "lng": -73.974}, {"route": "9024", "name": "Mermaid Avenue-West 10 Street", "code": "0108", "lat": 40.578357, "lng": -73.972299}, {"route": "9024", "name": "Mermaid Avenue-West 8 Street", "code": "0109", "lat": 40.578522, "lng": -73.970616}, {"route": "9024", "name": "Mermaid Avenue-West 6 Street", "code": "0110", "lat": 40.578595, "lng": -73.968945}, {"route": "9024", "name": "Mermaid Avenue-West 5 Street", "code": "0111", "lat": 40.578702, "lng": -73.968057}], "9025": [{"route": "9025", "name": "Mermaid Avenue-West 5 Street", "code": "0111", "lat": 40.578702, "lng": -73.968057}, {"route": "9025", "name": "Mermaid Avenue-West 6 Street", "code": "0110", "lat": 40.578595, "lng": -73.968945}, {"route": "9025", "name": "Mermaid Avenue-West 8 Street", "code": "0109", "lat": 40.578522, "lng": -73.970616}, {"route": "9025", "name": "Mermaid Avenue-West 10 Street", "code": "0108", "lat": 40.578357, "lng": -73.972299}, {"route": "9025", "name": "Mermaid Avenue-West 12 Street", "code": "0107", "lat": 40.578264, "lng": -73.974}, {"route": "9025", "name": "Mermaid Avenue-West 15 Street", "code": "0106", "lat": 40.578044, "lng": -73.977123}, {"route": "9025", "name": "Mermaid Avenue-West 17 Street", "code": "0105", "lat": 40.577817, "lng": -73.979399}, {"route": "9025", "name": "Mermaid Avenue-West 20 Street", "code": "0104", "lat": 40.577666, "lng": -73.982801}, {"route": "9025", "name": "Mermaid Avenue-West 25 Street", "code": "0103", "lat": 40.577493, "lng": -73.988861}, {"route": "9025", "name": "Mermaid Avenue-West 29 Street", "code": "0102", "lat": 40.577259, "lng": -73.993938}, {"route": "9025", "name": "Mermaid Avenue-West 33 Street", "code": "0101", "lat": 40.577034, "lng": -73.999404}], "9026": [{"route": "9026", "name": "Batchelder Street-Quentin Road", "code": "0301", "lat": 40.614485, "lng": -73.930617}, {"route": "9026", "name": "Batchelder Street-Kings Highway", "code": "0302", "lat": 40.609192, "lng": -73.930439}, {"route": "9026", "name": "East 56 Street-Kings Highway", "code": "0303", "lat": 40.609278, "lng": -73.929012}, {"route": "9026", "name": "East 56 Street-Avenue P", "code": "0304", "lat": 40.611813, "lng": -73.928783}, {"route": "9026", "name": "East 56 Street-Avenue O", "code": "0305", "lat": 40.613524, "lng": -73.928607}, {"route": "9026", "name": "East 56 Street-Avenue N", "code": "0306", "lat": 40.615235, "lng": -73.928431}, {"route": "9026", "name": "East 56 Street-Avenue M", "code": "0307", "lat": 40.616946, "lng": -73.928255}, {"route": "9026", "name": "East 56 Street-Flatlands Avenue", "code": "0308", "lat": 40.61735, "lng": -73.928214}, {"route": "9026", "name": "East 56 Street-Avenue L", "code": "0309", "lat": 40.618657, "lng": -73.928079}, {"route": "9026", "name": "East 56 Street-Avenue K", "code": "0310", "lat": 40.620368, "lng": -73.927903}], "9027": [{"route": "9027", "name": "East 56 Street-Avenue K", "code": "0310", "lat": 40.620368, "lng": -73.927903}, {"route": "9027", "name": "East 56 Street-Avenue L", "code": "0309", "lat": 40.618657, "lng": -73.928079}, {"route": "9027", "name": "East 56 Street-Flatlands Avenue", "code": "0308", "lat": 40.61735, "lng": -73.928214}, {"route": "9027", "name": "East 56 Street-Avenue M", "code": "0307", "lat": 40.616946, "lng": -73.928255}, {"route": "9027", "name": "East 56 Street-Avenue N", "code": "0306", "lat": 40.615235, "lng": -73.928431}, {"route": "9027", "name": "East 56 Street-Avenue O", "code": "0305", "lat": 40.613524, "lng": -73.928607}, {"route": "9027", "name": "East 56 Street-Avenue P", "code": "0304", "lat": 40.611813, "lng": -73.928783}, {"route": "9027", "name": "East 56 Street-Kings Highway", "code": "0303", "lat": 40.609278, "lng": -73.929012}, {"route": "9027", "name": "Batchelder Street-Kings Highway", "code": "0302", "lat": 40.609192, "lng": -73.930439}, {"route": "9027", "name": "Batchelder Street-Quentin Road", "code": "0301", "lat": 40.614485, "lng": -73.930617}], "9028": [{"route": "9028", "name": "Dayhill Road-60 Street", "code": "", "lat": 40.631306, "lng": -74.016033}, {"route": "9028", "name": "17th Avenue & 63rd Street", "code": "", "lat": 40.621675, "lng": -73.991259}, {"route": "9028", "name": "Benson Avenue-Bay 43 Street", "code": "0401", "lat": 40.6015, "lng": -74.003826}, {"route": "9028", "name": "Benson Avenue-Bay 41 Street", "code": "0402", "lat": 40.60203, "lng": -74.001061}, {"route": "9028", "name": "Benson Avenue-Bay 38 Street", "code": "0403", "lat": 40.602606, "lng": -73.997665}, {"route": "9028", "name": "Benson Avenue-Bay 35 Street", "code": "0404", "lat": 40.603141, "lng": -73.994361}, {"route": "9028", "name": "Benson Avenue-Bay 32 Street", "code": "0405", "lat": 40.603614, "lng": -73.991332}, {"route": "9028", "name": "Benson Avenue-Bay 29 Street", "code": "0406", "lat": 40.604081, "lng": -73.98827}, {"route": "9028", "name": "Benson Avenue-26 Avenue", "code": "0407", "lat": 40.604481, "lng": -73.985474}, {"route": "9028", "name": "Benson Avenue-Bay 22 Street", "code": "0408", "lat": 40.60496, "lng": -73.982209}], "9029": [{"route": "9029", "name": "Benson Avenue-Bay 22 Street", "code": "0408", "lat": 40.60496, "lng": -73.982209}, {"route": "9029", "name": "Benson Avenue-26 Avenue", "code": "0407", "lat": 40.604481, "lng": -73.985474}, {"route": "9029", "name": "Benson Avenue-Bay 29 Street", "code": "0406", "lat": 40.604081, "lng": -73.98827}, {"route": "9029", "name": "Benson Avenue-Bay 32 Street", "code": "0405", "lat": 40.603614, "lng": -73.991332}, {"route": "9029", "name": "Benson Avenue-Bay 35 Street", "code": "0404", "lat": 40.603141, "lng": -73.994361}, {"route": "9029", "name": "Benson Avenue-Bay 38 Street", "code": "0403", "lat": 40.602606, "lng": -73.997665}, {"route": "9029", "name": "Benson Avenue-Bay 41 Street", "code": "0402", "lat": 40.60203, "lng": -74.001061}, {"route": "9029", "name": "Benson Avenue-Bay 43 Street", "code": "0401", "lat": 40.6015, "lng": -74.003826}], "9249": [{"route": "9249", "name": "Sheepshead Bay Rd & West 5 Street", "code": "", "lat": 40.624529, "lng": -73.971925}, {"route": "9249", "name": "Emmons Avenue-West 5 Street", "code": "0209", "lat": 40.583035, "lng": -73.976826}, {"route": "9249", "name": "Emmons Avenue-West 2 Street", "code": "0210", "lat": 40.582724, "lng": -73.97371}, {"route": "9249", "name": "Emmons Avenue-Coney Island Avenue", "code": "0211", "lat": 40.582626, "lng": -73.971925}, {"route": "9249", "name": "Emmons Avenue-East 7 Street", "code": "0214", "lat": 40.582265, "lng": -73.966451}, {"route": "9249", "name": "Emmons Avenue-East 9 Street", "code": "0215", "lat": 40.582499, "lng": -73.963832}, {"route": "9249", "name": "Emmons Avenue-East 12 Street", "code": "0216", "lat": 40.582816, "lng": -73.960504}], "9253": [{"route": "9253", "name": "Benson Avenue-Bay 22 Street", "code": "0408", "lat": 40.60496, "lng": -73.982209}, {"route": "9253", "name": "Benson Avenue-26 Avenue", "code": "0407", "lat": 40.604481, "lng": -73.985474}, {"route": "9253", "name": "Benson Avenue-Bay 29 Street", "code": "0406", "lat": 40.604081, "lng": -73.98827}, {"route": "9253", "name": "Benson Avenue-Bay 32 Street", "code": "0405", "lat": 40.603614, "lng": -73.991332}, {"route": "9253", "name": "Benson Avenue-Bay 35 Street", "code": "0404", "lat": 40.603141, "lng": -73.994361}, {"route": "9253", "name": "Benson Avenue-Bay 38 Street", "code": "0403", "lat": 40.602606, "lng": -73.997665}, {"route": "9253", "name": "Benson Avenue-Bay 41 Street", "code": "0402", "lat": 40.60203, "lng": -74.001061}, {"route": "9253", "name": "Benson Avenue-Bay 43 Street", "code": "0401", "lat": 40.6015, "lng": -74.003826}]};
+    var ROUTE_ORDER = ["9020","9021","9022","9023","9024","9025","9026","9027","9028","9029","9249","9253"];
+    var ROUTE_COLORS = {"9020":"#2563eb","9021":"#dc2626","9022":"#16a34a","9023":"#9333ea","9024":"#ea580c","9025":"#0891b2","9026":"#d97706","9027":"#4f46e5","9028":"#be123c","9029":"#0f766e","9249":"#7c3aed","9253":"#65a30d"};
+
+    var map = L.map('map', { zoomControl:true, minZoom:10 }).setView([40.594, -73.974], 12);
+    var voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { subdomains:'abcd', maxZoom:20, attribution:'&copy; OpenStreetMap contributors &copy; CARTO' }).addTo(map);
+    var positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { subdomains:'abcd', maxZoom:20, attribution:'&copy; OpenStreetMap contributors &copy; CARTO' });
+    var darkMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains:'abcd', maxZoom:20, attribution:'&copy; OpenStreetMap contributors &copy; CARTO' });
+
+    var routeGroups = {};
+    var overlayMaps = {};
+    var routeListEl = document.getElementById('routeList');
+    var matchCountEl = document.getElementById('matchCount');
+    var themeToggleEl = document.getElementById('themeToggle');
+    var themeIconEl = document.getElementById('themeIcon');
+
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+    function popupHtml(stop, route) {
+      var codeText = stop.code ? 'Stop code: ' + esc(stop.code) : 'Supplemental stop';
+      return '<div style="min-width:220px"><div style="font-weight:800;font-size:14px;margin-bottom:4px;">' + esc(stop.name) + '</div><div style="font-size:13px;color:#64748b;">Run ' + esc(route) + '</div><div style="font-size:13px;color:#64748b;margin-top:4px;">' + codeText + '</div><div style="font-size:13px;margin-top:8px;color:#334155;">' + Number(stop.lat).toFixed(6) + ', ' + Number(stop.lng).toFixed(6) + '</div></div>';
+    }
+    function setThemeIcon(theme) {
+      if (theme === 'dark') {
+        themeIconEl.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+      } else {
+        themeIconEl.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+      }
+    }
+    function applyTheme(theme) {
+      document.body.classList.toggle('dark', theme === 'dark');
+      setThemeIcon(theme);
+      if (theme === 'dark') {
+        if (map.hasLayer(voyager)) map.removeLayer(voyager);
+        if (map.hasLayer(positron)) map.removeLayer(positron);
+        if (!map.hasLayer(darkMap)) darkMap.addTo(map);
+      } else {
+        if (map.hasLayer(darkMap)) map.removeLayer(darkMap);
+        if (!map.hasLayer(voyager) && !map.hasLayer(positron)) voyager.addTo(map);
+      }
+      try { localStorage.setItem('bus-routes-theme', theme); } catch(e) {}
+    }
+    function fitToStops(stops) {
+      if (!stops || !stops.length) return;
+      var bounds = L.latLngBounds(stops.map(function(s){ return [s.lat, s.lng]; }));
+      if (bounds.isValid()) map.fitBounds(bounds.pad(0.28));
+    }
+
+    ROUTE_ORDER.forEach(function(route){
+      routeGroups[route] = L.layerGroup().addTo(map);
+      overlayMaps['Run ' + route] = routeGroups[route];
+    });
+    L.control.layers({ 'Voyager': voyager, 'Modern light': positron, 'Dark mode': darkMap }, overlayMaps, { position:'topleft', collapsed:false }).addTo(map);
+
+    function drawMapAndLegend() {
+      var allPoints = [];
+      routeListEl.innerHTML = '';
+      ROUTE_ORDER.forEach(function(route){ routeGroups[route].clearLayers(); });
+
+      ROUTE_ORDER.forEach(function(route){
+        var stops = ROUTE_STOPS[route] || [];
+        stops.forEach(function(stop){
+          var color = ROUTE_COLORS[route] || '#2563eb';
+          var marker = L.circleMarker([stop.lat, stop.lng], { radius:8, color:color, fillColor:color, fillOpacity:0.9, weight:2 }).bindPopup(popupHtml(stop, route));
+          routeGroups[route].addLayer(marker);
+          allPoints.push([stop.lat, stop.lng]);
+        });
+
+        var item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'routeItem';
+        var header = document.createElement('div');
+        header.className = 'routeItemHeader';
+        var left = document.createElement('div');
+        left.className = 'routeLeft';
+        var swatch = document.createElement('span');
+        swatch.className = 'swatch';
+        swatch.style.background = ROUTE_COLORS[route] || '#2563eb';
+        var title = document.createElement('span');
+        title.className = 'routeName';
+        title.textContent = 'Run ' + route;
+        var count = document.createElement('span');
+        count.className = 'routeCount';
+        count.textContent = stops.length + (stops.length === 1 ? ' stop' : ' stops');
+        left.appendChild(swatch); left.appendChild(title);
+        header.appendChild(left); header.appendChild(count);
+        item.appendChild(header);
+        var stopList = document.createElement('div');
+        stopList.className = 'stopList';
+        stops.forEach(function(stop){
+          var chip = document.createElement('div');
+          chip.className = 'stopChip';
+          chip.textContent = stop.name;
+          stopList.appendChild(chip);
+        });
+        item.appendChild(stopList);
+        item.addEventListener('click', (function(r, s){ return function(){ if (!map.hasLayer(routeGroups[r])) routeGroups[r].addTo(map); fitToStops(s); }; })(route, stops));
+        routeListEl.appendChild(item);
+      });
+
+      if (allPoints.length) {
+        var bounds = L.latLngBounds(allPoints);
+        if (bounds.isValid()) map.fitBounds(bounds.pad(0.16));
+      }
+    }
+
+    themeToggleEl.addEventListener('click', function(){
+      applyTheme(document.body.classList.contains('dark') ? 'light' : 'dark');
+    });
+    applyTheme((function(){ try { return localStorage.getItem('bus-routes-theme') || 'light'; } catch(e) { return 'light'; } })());
+    drawMapAndLegend();
+  </script>
+</body>
+</html>
