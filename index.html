@@ -6,52 +6,52 @@
   <title>Mark Twain District 21 Bus Routes</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <style>
-    :root { --bg:#f4f7fb; --panel:rgba(255,255,255,0.92); --panel-solid:#ffffff; --text:#162033; --muted:#5f6b7a; --line:#dbe2ea; --shadow:0 18px 40px rgba(15,23,42,.12); }
-    body.dark { --bg:#0b1220; --panel:rgba(15,23,42,0.90); --panel-solid:#111827; --text:#e5eefb; --muted:#9fb0c7; --line:#243247; --shadow:0 22px 50px rgba(0,0,0,.38); }
-    * { box-sizing:border-box; }
-    html, body { margin:0; height:100%; overflow:hidden; font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); }
-    .globalToolbar { position:sticky; top:0; z-index:1200; padding:14px 18px; border-bottom:1px solid var(--line); background:var(--panel); backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:space-between; gap:12px; }
-    .globalToolbarLeft { display:flex; align-items:center; gap:10px; min-width:0; }
-    .toolbarTitle { font-size:15px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .themeBtn { width:44px; height:44px; border-radius:999px; border:1px solid var(--line); background:var(--panel-solid); color:var(--text); display:inline-flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:var(--shadow); flex:none; }
-    .themeBtn svg { width:18px; height:18px; }
-    .pill { display:inline-flex; align-items:center; gap:8px; padding:9px 13px; border-radius:999px; background:#eaf2ff; color:#2563eb; font-size:13px; font-weight:700; white-space:nowrap; }
-    .app { display:grid; grid-template-columns:390px 1fr; height:calc(100vh - 73px); }
-    .side { padding:20px; border-right:1px solid var(--line); background:var(--panel); backdrop-filter:blur(10px); overflow:hidden; display:flex; flex-direction:column; min-height:0; }
-    .main { display:grid; grid-template-rows:auto 1fr; min-height:0; overflow:hidden; }
-    .card { background:var(--panel-solid); border:1px solid var(--line); border-radius:20px; padding:18px; margin-bottom:14px; box-shadow:var(--shadow); }
-    .legendCard { flex:1; min-height:0; display:flex; flex-direction:column; margin-bottom:0; }
-    .eyebrow { display:inline-block; padding:6px 10px; border-radius:999px; background:#e8f0ff; color:#2563eb; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
-    h1 { margin:12px 0 6px; font-size:28px; line-height:1.1; }
-    h2 { margin:0 0 12px; font-size:18px; }
-    p { margin:8px 0 0; color:var(--muted); line-height:1.5; }
-    .meta { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
-    .stat { background:var(--panel-solid); border:1px solid var(--line); border-radius:16px; padding:14px; }
-    .stat small { display:block; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; font-size:11px; margin-bottom:6px; }
-    .stat strong { font-size:24px; }
-    .toolbar { padding:12px 16px; border-bottom:1px solid var(--line); background:var(--panel); backdrop-filter:blur(10px); display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-    .toolbar input { flex:1; min-width:180px; height:42px; border:1px solid var(--line); border-radius:14px; padding:0 14px; font-size:14px; background:var(--panel-solid); color:var(--text); }
-    .mapWrap { padding:16px; height:100%; overflow:hidden; }
-    .mapFrame { height:100%; min-height:0; border:1px solid var(--line); border-radius:24px; overflow:hidden; box-shadow:var(--shadow); background:var(--panel-solid); }
-    #map { width:100%; height:100%; }
-    .routeList { display:grid; gap:8px; overflow:auto; min-height:0; padding-right:4px; }
-    .routeItem { display:flex; align-items:center; justify-content:space-between; gap:10px; border:1px solid var(--line); border-radius:14px; background:var(--panel-solid); padding:12px 13px; cursor:pointer; }
-    .routeItem:hover { background:var(--panel); }
-    .routeLeft { display:flex; align-items:center; gap:10px; min-width:0; }
-    .swatch { width:12px; height:12px; border-radius:999px; flex:none; }
-    .routeName { font-weight:700; font-size:14px; }
-    .routeCount { font-size:12px; color:var(--muted); }
-    .leaflet-popup-content-wrapper { border-radius:16px; }
-    @media (max-width: 980px) {
-      .app { grid-template-columns:1fr; grid-template-rows:auto 1fr; height:calc(100vh - 64px); }
-      .side { border-right:0; border-bottom:1px solid var(--line); min-height:0; max-height:28vh; overflow:hidden; }
-      .side .card:first-child { display:none; }
-      .legendCard { border-radius:12px; margin-bottom:0; }
-      .main { min-height:0; }
-      .mapWrap { padding:10px; min-height:0; height:100%; }
-      .mapFrame { min-height:0; height:100%; border-radius:16px; }
-      .globalToolbar { padding:10px 14px; }
-      .toolbarTitle { font-size:14px; }
+    :root {--bg:#f4f7fb;--panel:rgba(255,255,255,0.92);--panel-solid:#ffffff;--text:#162033;--muted:#5f6b7a;--line:#dbe2ea;--shadow:0 18px 40px rgba(15,23,42,.12);}
+    body.dark {--bg:#0b1220;--panel:rgba(15,23,42,0.90);--panel-solid:#111827;--text:#e5eefb;--muted:#9fb0c7;--line:#243247;--shadow:0 22px 50px rgba(0,0,0,.38);}
+    * {box-sizing:border-box;}
+    html,body {margin:0;height:100%;overflow:hidden;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:var(--bg);}
+    .globalToolbar {position:sticky;top:0;z-index:1200;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--panel);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .globalToolbarLeft {display:flex;align-items:center;gap:10px;min-width:0;}
+    .toolbarTitle {font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .themeBtn {width:44px;height:44px;border-radius:999px;border:1px solid var(--line);background:var(--panel-solid);color:var(--text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shadow);flex:none;}
+    .themeBtn svg {width:18px;height:18px;}
+    .pill {display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;background:#eaf2ff;color:#2563eb;font-size:13px;font-weight:700;white-space:nowrap;}
+    .app {display:grid;grid-template-columns:390px 1fr;height:calc(100vh - 73px);}
+    .side {padding:20px;border-right:1px solid var(--line);background:var(--panel);backdrop-filter:blur(10px);overflow:hidden;display:flex;flex-direction:column;min-height:0;}
+    .main {display:grid;grid-template-rows:auto 1fr;min-height:0;overflow:hidden;}
+    .card {background:var(--panel-solid);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow);}
+    .legendCard {flex:1;min-height:0;display:flex;flex-direction:column;margin-bottom:0;}
+    .eyebrow {display:inline-block;padding:6px 10px;border-radius:999px;background:#e8f0ff;color:#2563eb;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
+    h1 {margin:12px 0 6px;font-size:28px;line-height:1.1;}
+    h2 {margin:0 0 12px;font-size:18px;}
+    p {margin:8px 0 0;color:var(--muted);line-height:1.5;}
+    .meta {display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+    .stat {background:var(--panel-solid);border:1px solid var(--line);border-radius:16px;padding:14px;}
+    .stat small {display:block;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:11px;margin-bottom:6px;}
+    .stat strong {font-size:24px;}
+    .toolbar {padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel);backdrop-filter:blur(10px);display:flex;align-items:center;gap:12px;}
+    .toolbar input {flex:1;min-width:180px;height:42px;border:1px solid var(--line);border-radius:14px;padding:0 14px;font-size:14px;background:var(--panel-solid);color:var(--text);}
+    .mapWrap {padding:16px;height:100%;overflow:hidden;}
+    .mapFrame {height:100%;min-height:0;border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:var(--shadow);}
+    #map {width:100%;height:100%;}
+    .routeList {display:grid;gap:8px;overflow:auto;min-height:0;padding-right:4px;}
+    .routeItem {display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:14px;background:var(--panel-solid);padding:12px 13px;cursor:pointer;width:100%;text-align:left;}
+    .routeItem:hover {background:var(--panel);}
+    .routeLeft {display:flex;align-items:center;gap:10px;min-width:0;}
+    .swatch {width:12px;height:12px;border-radius:999px;flex:none;}
+    .routeName {font-weight:700;font-size:14px;}
+    .routeCount {font-size:12px;color:var(--muted);}
+    .leaflet-popup-content-wrapper {border-radius:16px;}
+    @media (max-width:980px) {
+      .app {grid-template-columns:1fr;grid-template-rows:auto 1fr;height:calc(100vh - 64px);}
+      .side {border-right:0;border-bottom:1px solid var(--line);min-height:0;max-height:28vh;overflow:hidden;}
+      .side .card:first-child {display:none;}
+      .legendCard {border-radius:12px;margin-bottom:0;}
+      .main {min-height:0;}
+      .mapWrap {padding:10px;min-height:0;height:100%;}
+      .mapFrame {min-height:0;height:100%;border-radius:16px;}
+      .globalToolbar {padding:10px 14px;}
+      .toolbarTitle {font-size:14px;}
     }
   </style>
 </head>
@@ -59,7 +59,7 @@
   <div class="globalToolbar">
     <div class="globalToolbarLeft">
       <div class="toolbarTitle">Mark Twain District 21 Bus Routes</div>
-      <span class="pill" id="matchCount">53 stops</span>
+      <span class="pill" id="matchCount">57 stops</span>
     </div>
     <button id="themeToggle" class="themeBtn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
       <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
@@ -70,10 +70,10 @@
       <div class="card">
         <span class="eyebrow">Brooklyn</span>
         <h1>Bus Routes</h1>
-        <p>Use the route toggles on the map to show or hide individual runs.</p>
+        <p>Tap a route to zoom to its stops. Use the layer control to show/hide individual runs.</p>
         <div class="meta">
           <div class="stat"><small>Routes</small><strong>12</strong></div>
-          <div class="stat"><small>Stops shown</small><strong id="stopCount">53</strong></div>
+          <div class="stat"><small>Stops</small><strong>57</strong></div>
         </div>
       </div>
       <div class="card legendCard">
@@ -90,78 +90,24 @@
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
-    const STOPS = [
-  {"name":"Surf Avenue-West 5 Street","code":"0103","lat":40.575019,"lng":-73.973885,"routes":["9115"],"supplemental":false},
-  {"name":"BR Beach Avenue-Ocean Parkway","code":"0104","lat":40.57646,"lng":-73.967508,"routes":["9249"],"supplemental":false},
-  {"name":"Neptune Avenue-Ocean Parkway","code":"0105","lat":40.580398,"lng":-73.966954,"routes":["9115"],"supplemental":false},
-  {"name":"Neptune Avenue-Brighton 5 Street","code":"0106","lat":40.579555,"lng":-73.971799,"routes":["9115"],"supplemental":false},
-  {"name":"Neptune Avenue-C I Avenue","code":"0107","lat":40.581964,"lng":-73.959545,"routes":["9020"],"supplemental":false},
-  {"name":"BR Beach Avenue-BR 11 Street","code":"0108","lat":40.578198,"lng":-73.958853,"routes":["9249"],"supplemental":false},
-  {"name":"Oriental Blvd-Amherst Street","code":"0109","lat":40.57703,"lng":-73.951926,"routes":["9020"],"supplemental":false},
-  {"name":"Oriental Blvd-Hastings Street","code":"0111","lat":40.577877,"lng":-73.944818,"routes":["9020"],"supplemental":false},
-  {"name":"Oriental Blvd-McKenzie Street","code":"0112","lat":40.578082,"lng":-73.939883,"routes":[],"supplemental":false},
-  {"name":"Neptune Avenue-West 12 Street","code":"0116","lat":40.57956,"lng":-73.979769,"routes":["9115"],"supplemental":false},
-  {"name":"Neptune Avenue-West 5 Street","code":"0122","lat":40.579994,"lng":-73.972613,"routes":["9115"],"supplemental":false},
-  {"name":"Avenue Z-West 2 Street","code":"0201","lat":40.586195,"lng":-73.97112,"routes":["9132"],"supplemental":false},
-  {"name":"Avenue Z-Coney Island Avenue","code":"0203","lat":40.587208,"lng":-73.960609,"routes":["9132"],"supplemental":false},
-  {"name":"Emmons Avenue-East 16 Street","code":"0217","lat":40.583396,"lng":-73.952349,"routes":["9020"],"supplemental":false},
-  {"name":"Avenue X-West Street","code":"0301","lat":40.590589,"lng":-73.970569,"routes":["9132"],"supplemental":false},
-  {"name":"Avenue W-Coney Island Avenue","code":"0302","lat":40.593481,"lng":-73.960978,"routes":["9369"],"supplemental":false},
-  {"name":"Avenue U-Ocean Parkway","code":"0303","lat":40.597724,"lng":-73.965883,"routes":["9369"],"supplemental":false},
-  {"name":"Avenue S-Coney Island Avenue","code":"0305","lat":40.602705,"lng":-73.961678,"routes":["9173"],"supplemental":false},
-  {"name":"Avenue R-Ocean Parkway","code":"0306","lat":40.604792,"lng":-73.966865,"routes":["9173"],"supplemental":false},
-  {"name":"Avenue M-East 16 Street","code":"0308","lat":40.61636,"lng":-73.952743,"routes":["9163"],"supplemental":false},
-  {"name":"Avenue M-East 14 Street","code":"0309","lat":40.616484,"lng":-73.955072,"routes":["9163"],"supplemental":false},
-  {"name":"Avenue M-East 12 Street","code":"0310","lat":40.616632,"lng":-73.957555,"routes":["9163"],"supplemental":false},
-  {"name":"Avenue M-Ocean Avenue","code":"0311","lat":40.616794,"lng":-73.95992,"routes":["9163"],"supplemental":false},
-  {"name":"Avenue M-Coney Island Avenue","code":"0312","lat":40.617092,"lng":-73.96298,"routes":["9163"],"supplemental":false},
-  {"name":"Avenue M-East 3 Street","code":"0313","lat":40.617272,"lng":-73.965162,"routes":["9163"],"supplemental":false},
-  {"name":"Avenue M-Ocean Parkway","code":"0314","lat":40.617484,"lng":-73.967492,"routes":["9163"],"supplemental":false},
-  {"name":"Avenue M-West 2 Street","code":"0315","lat":40.617719,"lng":-73.970029,"routes":["9163"],"supplemental":false},
-  {"name":"Kings Highway-East 16 Street","code":"0401","lat":40.608736,"lng":-73.952454,"routes":["9111"],"supplemental":false},
-  {"name":"Kings Highway-East 14 Street","code":"0402","lat":40.608871,"lng":-73.954908,"routes":["9111"],"supplemental":false},
-  {"name":"Kings Highway-East 12 Street","code":"0403","lat":40.609029,"lng":-73.957303,"routes":["9111"],"supplemental":false},
-  {"name":"Kings Highway-Ocean Avenue","code":"0404","lat":40.609198,"lng":-73.959621,"routes":["9111"],"supplemental":false},
-  {"name":"Kings Highway-Coney Island Avenue","code":"0405","lat":40.60951,"lng":-73.962731,"routes":["9111"],"supplemental":false},
-  {"name":"Kings Highway-East 3 Street","code":"0406","lat":40.609697,"lng":-73.964929,"routes":["9111"],"supplemental":false},
-  {"name":"Kings Highway-Ocean Parkway","code":"0407","lat":40.609914,"lng":-73.967268,"routes":["9111"],"supplemental":false},
-  {"name":"Kings Highway-West 2 Street","code":"0408","lat":40.610151,"lng":-73.969787,"routes":["9111"],"supplemental":false},
-  {"name":"Kings Highway-McDonald Avenue","code":"0409","lat":40.610399,"lng":-73.972298,"routes":["9111"],"supplemental":false},
-  {"name":"Avenue J-East 16 Street","code":"0501","lat":40.620796,"lng":-73.952181,"routes":["9122"],"supplemental":false},
-  {"name":"Avenue J-East 14 Street","code":"0502","lat":40.620922,"lng":-73.954574,"routes":["9122"],"supplemental":false},
-  {"name":"Avenue J-East 12 Street","code":"0503","lat":40.621069,"lng":-73.956978,"routes":["9122"],"supplemental":false},
-  {"name":"Avenue J-Ocean Avenue","code":"0504","lat":40.621228,"lng":-73.959276,"routes":["9122"],"supplemental":false},
-  {"name":"Avenue J-Coney Island Avenue","code":"0505","lat":40.621524,"lng":-73.962302,"routes":["9122"],"supplemental":false},
-  {"name":"Avenue J-East 3 Street","code":"0506","lat":40.621701,"lng":-73.964471,"routes":["9122"],"supplemental":false},
-  {"name":"Avenue J-Ocean Parkway","code":"0507","lat":40.621921,"lng":-73.966836,"routes":["9122"],"supplemental":false},
-  {"name":"Avenue J-West 2 Street","code":"0508","lat":40.622158,"lng":-73.969381,"routes":["9122"],"supplemental":false},
-  {"name":"Avenue J-McDonald Avenue","code":"0509","lat":40.622414,"lng":-73.971919,"routes":["9122"],"supplemental":false},
-  {"name":"Quentin Road-East 16 Street","code":"0601","lat":40.614254,"lng":-73.952319,"routes":["9173"],"supplemental":false},
-  {"name":"Quentin Road-East 14 Street","code":"0602","lat":40.614385,"lng":-73.954754,"routes":["9173"],"supplemental":false},
-  {"name":"Quentin Road-East 12 Street","code":"0603","lat":40.614536,"lng":-73.957166,"routes":["9173"],"supplemental":false},
-  {"name":"Quentin Road-Ocean Avenue","code":"0604","lat":40.614698,"lng":-73.959467,"routes":["9173"],"supplemental":false},
-  {"name":"Quentin Road-Coney Island Avenue","code":"0605","lat":40.614994,"lng":-73.962521,"routes":["9173"],"supplemental":false},
-  {"name":"Quentin Road-East 3 Street","code":"0606","lat":40.615172,"lng":-73.96471,"routes":["9173"],"supplemental":false},
-  {"name":"Quentin Road-Ocean Parkway","code":"0607","lat":40.615397,"lng":-73.967064,"routes":["9173"],"supplemental":false},
-  {"name":"Quentin Road-West 2 Street","code":"0608","lat":40.615635,"lng":-73.969578,"routes":["9173"],"supplemental":false}
-];
-    const ROUTE_COLORS = {"9020":"#2563eb","9021":"#dc2626","9022":"#16a34a","9023":"#9333ea","9024":"#ea580c","9025":"#0891b2","9111":"#d97706","9115":"#4f46e5","9122":"#be123c","9132":"#0f766e","9163":"#7c3aed","9173":"#65a30d","9249":"#db2777","9369":"#0369a1"};
-    const ROUTE_ORDER = ["9020","9021","9022","9023","9024","9025","9111","9115","9122","9132","9163","9173","9249","9369"];
+    const STOPS = [{"name":"Surf Avenue-West 5 Street","code":"0103","lat":40.575019,"lng":-73.973885,"routes":["9115"],"supplemental":false},{"name":"BR Beach Avenue-Ocean Parkway","code":"0104","lat":40.57646,"lng":-73.967508,"routes":["9249"],"supplemental":false},{"name":"Neptune Avenue-Ocean Parkway","code":"0105","lat":40.580398,"lng":-73.966954,"routes":["9115"],"supplemental":false},{"name":"Neptune Avenue-Brighton 5 Street","code":"0106","lat":40.579555,"lng":-73.971799,"routes":["9115"],"supplemental":false},{"name":"Neptune Avenue-C I Avenue","code":"0107","lat":40.581964,"lng":-73.959545,"routes":["9020"],"supplemental":false},{"name":"BR Beach Avenue-BR 11 Street","code":"0108","lat":40.578198,"lng":-73.958853,"routes":["9249"],"supplemental":false},{"name":"Oriental Blvd-Amherst Street","code":"0109","lat":40.57703,"lng":-73.951926,"routes":["9020"],"supplemental":false},{"name":"Oriental Blvd-Hastings Street","code":"0111","lat":40.577877,"lng":-73.944818,"routes":["9020"],"supplemental":false},{"name":"Oriental Blvd-McKenzie Street","code":"0112","lat":40.578082,"lng":-73.939883,"routes":[],"supplemental":false},{"name":"Neptune Avenue-West 12 Street","code":"0116","lat":40.57956,"lng":-73.979769,"routes":["9115"],"supplemental":false},{"name":"Neptune Avenue-West 5 Street","code":"0122","lat":40.579994,"lng":-73.972613,"routes":["9115"],"supplemental":false},{"name":"Avenue Z-West 2 Street","code":"0201","lat":40.586195,"lng":-73.97112,"routes":["9132"],"supplemental":false},{"name":"Avenue Z-Coney Island Avenue","code":"0203","lat":40.587208,"lng":-73.960609,"routes":["9132"],"supplemental":false},{"name":"Emmons Avenue-East 16 Street","code":"0217","lat":40.583396,"lng":-73.952349,"routes":["9020"],"supplemental":false},{"name":"Avenue X-West Street","code":"0301","lat":40.590589,"lng":-73.970569,"routes":["9132"],"supplemental":false},{"name":"Avenue W-Coney Island Avenue","code":"0302","lat":40.593481,"lng":-73.960978,"routes":["9369"],"supplemental":false},{"name":"Avenue U-Ocean Parkway","code":"0303","lat":40.597724,"lng":-73.965883,"routes":["9369"],"supplemental":false},{"name":"Avenue S-Coney Island Avenue","code":"0305","lat":40.602705,"lng":-73.961678,"routes":["9173"],"supplemental":false},{"name":"Avenue R-Ocean Parkway","code":"0306","lat":40.604792,"lng":-73.966865,"routes":["9173"],"supplemental":false},{"name":"Avenue M-East 16 Street","code":"0308","lat":40.61636,"lng":-73.952743,"routes":["9163"],"supplemental":false},{"name":"Avenue M-East 14 Street","code":"0309","lat":40.616484,"lng":-73.955072,"routes":["9163"],"supplemental":false},{"name":"Avenue M-East 12 Street","code":"0310","lat":40.616632,"lng":-73.957555,"routes":["9163"],"supplemental":false},{"name":"Avenue M-Ocean Avenue","code":"0311","lat":40.616794,"lng":-73.95992,"routes":["9163"],"supplemental":false},{"name":"Avenue M-Coney Island Avenue","code":"0312","lat":40.617092,"lng":-73.96298,"routes":["9163"],"supplemental":false},{"name":"Avenue M-East 3 Street","code":"0313","lat":40.617272,"lng":-73.965162,"routes":["9163"],"supplemental":false},{"name":"Avenue M-Ocean Parkway","code":"0314","lat":40.617484,"lng":-73.967492,"routes":["9163"],"supplemental":false},{"name":"Avenue M-West 2 Street","code":"0315","lat":40.617719,"lng":-73.970029,"routes":["9163"],"supplemental":false},{"name":"Kings Highway-East 16 Street","code":"0401","lat":40.608736,"lng":-73.952454,"routes":["9111"],"supplemental":false},{"name":"Kings Highway-East 14 Street","code":"0402","lat":40.608871,"lng":-73.954908,"routes":["9111"],"supplemental":false},{"name":"Kings Highway-East 12 Street","code":"0403","lat":40.609029,"lng":-73.957303,"routes":["9111"],"supplemental":false},{"name":"Kings Highway-Ocean Avenue","code":"0404","lat":40.609198,"lng":-73.959621,"routes":["9111"],"supplemental":false},{"name":"Kings Highway-Coney Island Avenue","code":"0405","lat":40.60951,"lng":-73.962731,"routes":["9111"],"supplemental":false},{"name":"Kings Highway-East 3 Street","code":"0406","lat":40.609697,"lng":-73.964929,"routes":["9111"],"supplemental":false},{"name":"Kings Highway-Ocean Parkway","code":"0407","lat":40.609914,"lng":-73.967268,"routes":["9111"],"supplemental":false},{"name":"Kings Highway-West 2 Street","code":"0408","lat":40.610151,"lng":-73.969787,"routes":["9111"],"supplemental":false},{"name":"Kings Highway-McDonald Avenue","code":"0409","lat":40.610399,"lng":-73.972298,"routes":["9111"],"supplemental":false},{"name":"Avenue J-East 16 Street","code":"0501","lat":40.620796,"lng":-73.952181,"routes":["9122"],"supplemental":false},{"name":"Avenue J-East 14 Street","code":"0502","lat":40.620922,"lng":-73.954574,"routes":["9122"],"supplemental":false},{"name":"Avenue J-East 12 Street","code":"0503","lat":40.621069,"lng":-73.956978,"routes":["9122"],"supplemental":false},{"name":"Avenue J-Ocean Avenue","code":"0504","lat":40.621228,"lng":-73.959276,"routes":["9122"],"supplemental":false},{"name":"Avenue J-Coney Island Avenue","code":"0505","lat":40.621524,"lng":-73.962302,"routes":["9122"],"supplemental":false},{"name":"Avenue J-East 3 Street","code":"0506","lat":40.621701,"lng":-73.964471,"routes":["9122"],"supplemental":false},{"name":"Avenue J-Ocean Parkway","code":"0507","lat":40.621921,"lng":-73.966836,"routes":["9122"],"supplemental":false},{"name":"Avenue J-West 2 Street","code":"0508","lat":40.622158,"lng":-73.969381,"routes":["9122"],"supplemental":false},{"name":"Avenue J-McDonald Avenue","code":"0509","lat":40.622414,"lng":-73.971919,"routes":["9122"],"supplemental":false},{"name":"Quentin Road-East 16 Street","code":"0601","lat":40.614254,"lng":-73.952319,"routes":["9173"],"supplemental":false},{"name":"Quentin Road-East 14 Street","code":"0602","lat":40.614385,"lng":-73.954754,"routes":["9173"],"supplemental":false},{"name":"Quentin Road-East 12 Street","code":"0603","lat":40.614536,"lng":-73.957166,"routes":["9173"],"supplemental":false},{"name":"Quentin Road-Ocean Avenue","code":"0604","lat":40.614698,"lng":-73.959467,"routes":["9173"],"supplemental":false},{"name":"Quentin Road-Coney Island Avenue","code":"0605","lat":40.614994,"lng":-73.962521,"routes":["9173"],"supplemental":false},{"name":"Quentin Road-East 3 Street","code":"0606","lat":40.615172,"lng":-73.96471,"routes":["9173"],"supplemental":false},{"name":"Quentin Road-Ocean Parkway","code":"0607","lat":40.615397,"lng":-73.967064,"routes":["9173"],"supplemental":false},{"name":"Quentin Road-West 2 Street","code":"0608","lat":40.615635,"lng":-73.969578,"routes":["9173"],"supplemental":false},{"name":"Sheepshead Bay Road-East 16 Street","code":"0701","lat":40.594486,"lng":-73.953271,"routes":["9197"],"supplemental":false},{"name":"Avenue T-East 16 Street","code":"0702","lat":40.597278,"lng":-73.952948,"routes":["9158"],"supplemental":false},{"name":"Avenue T-East 14 Street","code":"0703","lat":40.597409,"lng":-73.955387,"routes":["9158"],"supplemental":false},{"name":"Avenue T-East 12 Street","code":"0704","lat":40.597563,"lng":-73.957803,"routes":["9158"],"supplemental":false},{"name":"Flatbush Avenue-Hillel Place","code":"0801","lat":40.630295,"lng":-73.950854,"routes":["9284"],"supplemental":false}];
+    const ROUTE_COLORS = {"9020":"#2563eb","9111":"#dc2626","9115":"#16a34a","9122":"#9333ea","9132":"#ea580c","9158":"#0891b2","9163":"#d97706","9173":"#4f46e5","9197":"#be123c","9249":"#0f766e","9284":"#7c3aed","9369":"#65a30d"};
+    const ROUTE_ORDER = ["9020","9111","9115","9122","9132","9158","9163","9173","9197","9249","9284","9369"];
 
-    const map = L.map('map', { zoomControl:true, minZoom:10 }).setView([40.594, -73.974], 12);
-    const voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { subdomains:'abcd', maxZoom:20, attribution:'&copy; OpenStreetMap contributors &copy; CARTO' }).addTo(map);
-    const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains:'abcd', maxZoom:20, attribution:'&copy; OpenStreetMap contributors &copy; CARTO' });
+    const map = L.map('map', {zoomControl:true,minZoom:10}).setView([40.594,-73.974],12);
+    const voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:20,attribution:'&copy; OpenStreetMap contributors &copy; CARTO'}).addTo(map);
+    const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:20,attribution:'&copy; OpenStreetMap contributors &copy; CARTO'});
 
     const routeGroups = {};
     const overlayMaps = {};
-    ROUTE_ORDER.forEach(r => { routeGroups[r] = L.layerGroup().addTo(map); overlayMaps['Run ' + r] = routeGroups[r]; });
+    ROUTE_ORDER.forEach(r => { routeGroups[r] = L.layerGroup().addTo(map); overlayMaps['Run '+r] = routeGroups[r]; });
     L.control.layers({'Voyager':voyager,'Dark':darkTiles}, overlayMaps, {position:'topleft',collapsed:true}).addTo(map);
 
-    function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+    function esc(s) { return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
     function popupHtml(stop) {
-      const codeText = stop.code ? 'Stop code: ' + esc(stop.code) : 'Supplemental stop';
-      const routeText = stop.routes.length ? stop.routes.map(r => 'Run ' + r).join(', ') : 'Unassigned';
-      return '<div style="min-width:220px"><div style="font-weight:800;font-size:14px;margin-bottom:4px;">' + esc(stop.name) + '</div><div style="font-size:13px;color:#64748b;">' + routeText + '</div><div style="font-size:13px;color:#64748b;margin-top:4px;">' + codeText + '</div><div style="font-size:13px;margin-top:8px;color:#334155;">' + Number(stop.lat).toFixed(6) + ', ' + Number(stop.lng).toFixed(6) + '</div></div>';
+      const codeText = stop.code ? 'Stop code: '+esc(stop.code) : 'Supplemental stop';
+      const routeText = stop.routes.length ? stop.routes.map(r=>'Run '+r).join(', ') : 'Unassigned';
+      return '<div style="min-width:220px"><div style="font-weight:800;font-size:14px;margin-bottom:4px;">'+esc(stop.name)+'</div><div style="font-size:13px;color:#64748b;">'+routeText+'</div><div style="font-size:13px;color:#64748b;margin-top:4px;">'+codeText+'</div><div style="font-size:13px;margin-top:8px;color:#334155;">'+Number(stop.lat).toFixed(6)+', '+Number(stop.lng).toFixed(6)+'</div></div>';
     }
 
     const allMarkers = [];
@@ -169,9 +115,9 @@
       const routes = stop.routes.length ? stop.routes : ['unassigned'];
       routes.forEach(r => {
         const color = ROUTE_COLORS[r] || '#94a3b8';
-        const marker = L.circleMarker([stop.lat, stop.lng], {radius:8, color, fillColor:color, fillOpacity:0.9, weight:2}).bindPopup(popupHtml(stop));
+        const marker = L.circleMarker([stop.lat,stop.lng],{radius:8,color,fillColor:color,fillOpacity:0.9,weight:2}).bindPopup(popupHtml(stop));
         if (routeGroups[r]) routeGroups[r].addLayer(marker);
-        allMarkers.push({stop, marker, routes: stop.routes});
+        allMarkers.push({stop,marker});
       });
     });
 
@@ -182,44 +128,43 @@
     const themeIconEl = document.getElementById('themeIcon');
 
     function setThemeIcon(theme) {
-      if (theme === 'dark') { themeIconEl.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>'; }
-      else { themeIconEl.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>'; }
+      if (theme==='dark') { themeIconEl.innerHTML='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>'; }
+      else { themeIconEl.innerHTML='<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>'; }
     }
     function applyTheme(theme) {
-      document.body.classList.toggle('dark', theme === 'dark');
+      document.body.classList.toggle('dark',theme==='dark');
       setThemeIcon(theme);
-      if (theme === 'dark') { if (!map.hasLayer(darkTiles)) darkTiles.addTo(map); if (map.hasLayer(voyager)) map.removeLayer(voyager); }
+      if (theme==='dark') { if (!map.hasLayer(darkTiles)) darkTiles.addTo(map); if (map.hasLayer(voyager)) map.removeLayer(voyager); }
       else { if (!map.hasLayer(voyager)) voyager.addTo(map); if (map.hasLayer(darkTiles)) map.removeLayer(darkTiles); }
-      try { localStorage.setItem('bus-routes-theme', theme); } catch(e) {}
+      try { localStorage.setItem('bus-routes-theme',theme); } catch(e) {}
     }
-    themeToggleEl.addEventListener('click', () => applyTheme(document.body.classList.contains('dark') ? 'light' : 'dark'));
-    applyTheme((() => { try { return localStorage.getItem('bus-routes-theme') || 'light'; } catch(e) { return 'light'; } })());
+    themeToggleEl.addEventListener('click',()=>applyTheme(document.body.classList.contains('dark')?'light':'dark'));
+    applyTheme((()=>{ try { return localStorage.getItem('bus-routes-theme')||'light'; } catch(e) { return 'light'; } })());
 
     ROUTE_ORDER.forEach(route => {
-      const stops = STOPS.filter(s => s.routes.includes(route));
+      const stops = STOPS.filter(s=>s.routes.includes(route));
       const row = document.createElement('button');
-      row.type = 'button';
-      row.className = 'routeItem';
-      row.innerHTML = '<div class="routeLeft"><span class="swatch" style="background:' + (ROUTE_COLORS[route]||'#94a3b8') + '"></span><span class="routeName">Run ' + route + '</span></div><span class="routeCount">' + stops.length + ' stop' + (stops.length===1?'':'s') + '</span>';
-      row.addEventListener('click', () => {
+      row.type='button'; row.className='routeItem';
+      row.innerHTML='<div class="routeLeft"><span class="swatch" style="background:'+(ROUTE_COLORS[route]||'#94a3b8')+'"></span><span class="routeName">Run '+route+'</span></div><span class="routeCount">'+stops.length+' stop'+(stops.length===1?'':'s')+'</span>';
+      row.addEventListener('click',()=>{
         if (!map.hasLayer(routeGroups[route])) routeGroups[route].addTo(map);
-        if (stops.length) { const b = L.latLngBounds(stops.map(s=>[s.lat,s.lng])); if (b.isValid()) map.fitBounds(b.pad(0.28)); }
+        if (stops.length) { const b=L.latLngBounds(stops.map(s=>[s.lat,s.lng])); if (b.isValid()) map.fitBounds(b.pad(0.28)); }
       });
       routeListEl.appendChild(row);
     });
 
-    searchEl.addEventListener('input', () => {
-      const q = searchEl.value.trim().toLowerCase();
-      let count = 0;
-      allMarkers.forEach(({stop, marker}) => {
-        const match = !q || stop.name.toLowerCase().includes(q) || stop.code.toLowerCase().includes(q) || stop.routes.some(r => r.includes(q));
-        if (match) { count++; marker.setStyle({opacity:1, fillOpacity:0.9}); }
-        else { marker.setStyle({opacity:0.1, fillOpacity:0.1}); }
+    searchEl.addEventListener('input',()=>{
+      const q=searchEl.value.trim().toLowerCase();
+      let count=0;
+      allMarkers.forEach(({stop,marker})=>{
+        const match=!q||stop.name.toLowerCase().includes(q)||stop.code.toLowerCase().includes(q)||stop.routes.some(r=>r.includes(q));
+        if (match) { count++; marker.setStyle({opacity:1,fillOpacity:0.9}); }
+        else { marker.setStyle({opacity:0.1,fillOpacity:0.1}); }
       });
-      matchCountEl.textContent = count + ' stop' + (count===1?'':'s');
+      matchCountEl.textContent=count+' stop'+(count===1?'':'s');
     });
 
-    const allBounds = L.latLngBounds(STOPS.map(s=>[s.lat,s.lng]));
+    const allBounds=L.latLngBounds(STOPS.map(s=>[s.lat,s.lng]));
     if (allBounds.isValid()) map.fitBounds(allBounds.pad(0.12));
   </script>
 </body>
