@@ -208,6 +208,10 @@
         });
 
         header.style.borderRadius = '14px';
+        container.classList.add('routeContainer');
+        container.style.borderRadius = '14px';
+        container.style.transition = 'background 0.2s';
+        
         header.addEventListener('click', () => {
           currentlyActiveRoute = (currentlyActiveRoute === route) ? null : route;
           
@@ -229,11 +233,6 @@
             }
           }
         });
-        
-        container.classList.add('routeContainer');
-        container.appendChild(header);
-        container.appendChild(stopList);
-        routeListEl.appendChild(container);
       });
 
       searchEl.addEventListener('input',()=>{
