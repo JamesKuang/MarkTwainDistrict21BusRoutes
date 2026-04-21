@@ -189,19 +189,38 @@
         
         const stopList = document.createElement('div');
         stopList.style.display = 'none';
-        stopList.style.padding = '8px 16px';
-        stopList.style.fontSize = '12px';
+        stopList.style.padding = '0 13px 12px 13px';
+        stopList.style.fontSize = '13px';
+        stopList.style.border = '1px solid var(--line)';
+        stopList.style.borderTop = 'none';
+        stopList.style.borderBottomLeftRadius = '14px';
+        stopList.style.borderBottomRightRadius = '14px';
+        stopList.style.marginTop = '-10px';
+        stopList.style.background = 'var(--panel-solid)';
+        
         stops.forEach(stop => {
           const item = document.createElement('div');
           item.textContent = stop.name;
-          item.style.padding = '4px 0';
+          item.style.padding = '6px 0';
+          item.style.borderTop = '1px solid var(--line)';
           item.style.cursor = 'pointer';
-          item.onclick = () => { map.setView([stop.lat, stop.lng], 16); };
+          item.style.color = 'var(--muted)';
+          item.onmouseover = () => item.style.color = 'var(--text)';
+          item.onmouseout = () => item.style.color = 'var(--muted)';
+          item.onclick = (e) => { 
+            e.stopPropagation();
+            map.setView([stop.lat, stop.lng], 16); 
+            marker.openPopup();
+          };
           stopList.appendChild(item);
         });
 
+        header.style.borderRadius = '14px';
         header.addEventListener('click',()=>{
-          stopList.style.display = stopList.style.display === 'none' ? 'block' : 'none';
+          const isOpening = stopList.style.display === 'none';
+          stopList.style.display = isOpening ? 'block' : 'none';
+          header.style.borderBottomLeftRadius = isOpening ? '0' : '14px';
+          header.style.borderBottomRightRadius = isOpening ? '0' : '14px';
           if (!map.hasLayer(routeGroups[route])) routeGroups[route].addTo(map);
           if (stops.length) { const b=L.latLngBounds(stops.map(s=>[s.lat,s.lng])); if (b.isValid()) map.fitBounds(b.pad(0.28)); }
         });
