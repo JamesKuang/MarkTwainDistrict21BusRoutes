@@ -94,7 +94,7 @@
     const ROUTE_ORDER = ["9020","9111","9115","9122","9132","9158","9163","9173","9197","9249","9284","9369"];
 
     async function init() {
-      const response = await fetch('routes.csv');
+      const response = await fetch('bus_stops.csv');
       const csvText = await response.text();
       const lines = csvText.split('\n').filter(l => l.trim() !== '');
       
