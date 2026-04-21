@@ -132,8 +132,6 @@
         routeGroups[r] = L.layerGroup().addTo(map); 
         overlayMaps['Run '+r] = routeGroups[r]; 
         
-        // Add Polylines for each route
-        // For CSV data, we don't have a reliable sequence code, so we'll just connect in order of appearance
         const routeStops = lines.slice(1).map(l => l.split(',')).filter(parts => parts[0].trim() === r);
         
         if (routeStops.length > 1) {
@@ -151,20 +149,15 @@
 
       function esc(s) { return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
       function popupHtml(stop) {
-        const codeText = stop.code ? 'Stop code: '+esc(stop.code) : 'Intersection';
-        const routeText = stop.routes.length ? stop.routes.map(r=>'Run '+r).join(', ') : 'Unassigned';
-        return '<div style="min-width:220px"><div style="font-weight:800;font-size:14px;margin-bottom:4px;">'+esc(stop.name)+'</div><div style="font-size:13px;color:#64748b;">'+routeText+'</div><div style="font-size:13px;color:#64748b;margin-top:4px;">'+codeText+'</div><div style="font-size:13px;margin-top:8px;color:#334155;">'+Number(stop.lat).toFixed(6)+', '+Number(stop.lng).toFixed(6)+'</div></div>';
+        return '<div style="min-width:220px"><div style="font-weight:800;font-size:14px;margin-bottom:4px;">'+esc(stop.name)+'</div><div style="font-size:13px;color:#64748b;">'+stop.routes.map(r=>'Run '+r).join(', ')+'</div><div style="font-size:13px;margin-top:8px;color:#334155;">'+Number(stop.lat).toFixed(6)+', '+Number(stop.lng).toFixed(6)+'</div></div>';
       }
 
       const allMarkers = [];
       STOPS.forEach(stop => {
-        const routes = stop.routes.length ? stop.routes : ['unassigned'];
-        routes.forEach(r => {
-          const color = ROUTE_COLORS[r] || '#94a3b8';
-          const marker = L.circleMarker([stop.lat,stop.lng],{radius:8,color,fillColor:color,fillOpacity:0.9,weight:2}).bindPopup(popupHtml(stop));
-          if (routeGroups[r]) routeGroups[r].addLayer(marker);
-          allMarkers.push({stop,marker});
-        });
+        const color = ROUTE_COLORS[stop.routes[0]] || '#94a3b8';
+        const marker = L.circleMarker([stop.lat,stop.lng],{radius:8,color,fillColor:color,fillOpacity:0.9,weight:2}).bindPopup(popupHtml(stop));
+        if (routeGroups[stop.routes[0]]) routeGroups[stop.routes[0]].addLayer(marker);
+        allMarkers.push({stop,marker});
       });
 
       const routeListEl = document.getElementById('routeList');
