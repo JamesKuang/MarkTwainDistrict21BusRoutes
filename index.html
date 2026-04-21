@@ -182,14 +182,33 @@
 
       ROUTE_ORDER.forEach(route => {
         const stops = STOPS.filter(s=>s.routes.includes(route));
-        const row = document.createElement('button');
-        row.type='button'; row.className='routeItem';
-        row.innerHTML='<div class="routeLeft"><span class="swatch" style="background:'+(ROUTE_COLORS[route]||'#94a3b8')+'"></span><span class="routeName">Run '+route+'</span></div><span class="routeCount">'+stops.length+' stop'+(stops.length===1?'':'s')+'</span>';
-        row.addEventListener('click',()=>{
+        const container = document.createElement('div');
+        const header = document.createElement('button');
+        header.type='button'; header.className='routeItem';
+        header.innerHTML='<div class="routeLeft"><span class="swatch" style="background:'+(ROUTE_COLORS[route]||'#94a3b8')+'"></span><span class="routeName">Run '+route+'</span></div><span class="routeCount">'+stops.length+' stop'+(stops.length===1?'':'s')+'</span>';
+        
+        const stopList = document.createElement('div');
+        stopList.style.display = 'none';
+        stopList.style.padding = '8px 16px';
+        stopList.style.fontSize = '12px';
+        stops.forEach(stop => {
+          const item = document.createElement('div');
+          item.textContent = stop.name;
+          item.style.padding = '4px 0';
+          item.style.cursor = 'pointer';
+          item.onclick = () => { map.setView([stop.lat, stop.lng], 16); };
+          stopList.appendChild(item);
+        });
+
+        header.addEventListener('click',()=>{
+          stopList.style.display = stopList.style.display === 'none' ? 'block' : 'none';
           if (!map.hasLayer(routeGroups[route])) routeGroups[route].addTo(map);
           if (stops.length) { const b=L.latLngBounds(stops.map(s=>[s.lat,s.lng])); if (b.isValid()) map.fitBounds(b.pad(0.28)); }
         });
-        routeListEl.appendChild(row);
+        
+        container.appendChild(header);
+        container.appendChild(stopList);
+        routeListEl.appendChild(container);
       });
 
       searchEl.addEventListener('input',()=>{
