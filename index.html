@@ -200,9 +200,8 @@
         
         stops.forEach(stop => {
           const item = document.createElement('div');
-          item.textContent = stop.name;
-          item.style.padding = '6px 0';
-          item.style.borderTop = '1px solid var(--line)';
+          item.innerHTML = '<span style="margin-right:8px;">&bull;</span>' + stop.name;
+          item.style.padding = '4px 0';
           item.style.cursor = 'pointer';
           item.style.color = 'var(--muted)';
           item.onmouseover = () => item.style.color = 'var(--text)';
@@ -210,7 +209,6 @@
           item.onclick = (e) => { 
             e.stopPropagation();
             map.setView([stop.lat, stop.lng], 16); 
-            marker.openPopup();
           };
           stopList.appendChild(item);
         });
