@@ -216,7 +216,7 @@
           currentlyActiveRoute = (currentlyActiveRoute === route) ? null : route;
           
           document.querySelectorAll('.routeContainer').forEach(el => el.style.background = 'transparent');
-          if (currentlyActiveRoute) container.style.background = 'var(--line)';
+          if (currentlyActiveRoute === route) container.style.background = 'var(--line)';
 
           ROUTE_ORDER.forEach(r => {
             const opacity = (currentlyActiveRoute === null || r === currentlyActiveRoute) ? 1 : 0.1;
