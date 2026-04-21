@@ -171,6 +171,8 @@
       themeToggleEl.addEventListener('click',()=>applyTheme(document.body.classList.contains('dark')?'light':'dark'));
       applyTheme((()=>{ try { return localStorage.getItem('bus-routes-theme')||'light'; } catch(e) { return 'light'; } })());
 
+      let currentlyActiveRoute = null;
+
       ROUTE_ORDER.forEach(route => {
         const stops = STOPS.filter(s=>s.routes.includes(route));
         const container = document.createElement('div');
@@ -205,13 +207,11 @@
 
         header.style.borderRadius = '14px';
         header.addEventListener('click', () => {
-          // Focus logic
           currentlyActiveRoute = (currentlyActiveRoute === route) ? null : route;
           ROUTE_ORDER.forEach(r => {
             const opacity = (currentlyActiveRoute === null || r === currentlyActiveRoute) ? 1 : 0.1;
             routeGroups[r].getLayers().forEach(l => {
-              if (l instanceof L.CircleMarker) l.setStyle({opacity, fillOpacity: opacity});
-              else if (l instanceof L.Polyline) l.setStyle({opacity});
+              if (l instanceof L.CircleMarker || l instanceof L.Polyline) l.setStyle({opacity});
             });
           });
 
