@@ -71,14 +71,7 @@
         <span class="eyebrow">Brooklyn</span>
         <h1>Bus Routes</h1>
         <p>Tap a route to zoom to its stops. Use the layer control to show/hide individual runs.</p>
-        <div class="meta">
-          <div class="stat"><small>Routes</small><strong id="totalRoutes">-</strong></div>
-          <div class="stat"><small>Stops</small><strong id="totalStops">-</strong></div>
-        </div>
-      </div>
-      <div class="card legendCard">
-        <h2>Route legend</h2>
-        <div class="routeList" id="routeList"></div>
+        <div class="routeList" id="routeList" style="margin-top:20px;"></div>
       </div>
     </aside>
     <main class="main">
@@ -117,8 +110,6 @@
       
       const STOPS = Object.values(stopMap);
 
-      document.getElementById('totalRoutes').textContent = ROUTE_ORDER.length;
-      document.getElementById('totalStops').textContent = STOPS.length;
       document.getElementById('matchCount').textContent = STOPS.length + ' stops';
 
       const map = L.map('map', {zoomControl:true,minZoom:10}).setView([40.594,-73.974],12);
