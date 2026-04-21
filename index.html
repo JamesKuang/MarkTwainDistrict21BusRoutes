@@ -196,18 +196,23 @@
           item.style.padding = '4px 0';
           item.style.cursor = 'pointer';
           item.style.color = 'var(--muted)';
-          item.onmouseover = () => item.style.color = 'var(--text)';
-          item.onmouseout = () => item.style.color = 'var(--muted)';
           item.onclick = (e) => { 
             e.stopPropagation();
+            document.querySelectorAll('.stop-item').forEach(el => el.style.color = 'var(--muted)');
+            item.style.color = 'var(--text)';
             map.setView([stop.lat, stop.lng], 16); 
           };
+          item.classList.add('stop-item');
           stopList.appendChild(item);
         });
 
         header.style.borderRadius = '14px';
         header.addEventListener('click', () => {
           currentlyActiveRoute = (currentlyActiveRoute === route) ? null : route;
+          
+          document.querySelectorAll('.routeItem').forEach(el => el.style.background = 'var(--panel-solid)');
+          if (currentlyActiveRoute) header.style.background = 'var(--line)';
+
           ROUTE_ORDER.forEach(r => {
             const opacity = (currentlyActiveRoute === null || r === currentlyActiveRoute) ? 1 : 0.1;
             routeGroups[r].getLayers().forEach(l => {
